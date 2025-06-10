@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import ReactPaginate from 'react-paginate';
 import { Toaster, toast } from "react-hot-toast";
@@ -23,16 +23,14 @@ export default function App() {
     placeholderData: keepPreviousData,
   });
 
-  const openModal = (movie:Movie) => {
-    setSelectedMovie(movie);
-    document.body.style.overflow = "hidden";
-}
+ useEffect(() => {
+  if (isSuccess && data && data.results.length === 0 && query !== "") {
+    toast.error("No movies found for your request.");
+  }
+}, [isSuccess, data, query]);
 
-  const closeModal = () => {
-    setSelectedMovie(null);
-    document.body.style.overflow = ""; 
-}
-
+  const openModal = (movie:Movie) => setSelectedMovie(movie);
+  const closeModal = () => setSelectedMovie(null);
   const handleSearch = (newQuery: string) => {
     setQuery(newQuery);
     setCurrentPage(1);
@@ -41,6 +39,7 @@ export default function App() {
   const handlePageChange = ({ selected }: { selected:number }) => {
     setCurrentPage(selected + 1);
   };
+
 
   return (
     <div className={ css.container }>
@@ -75,3 +74,4 @@ export default function App() {
     </div>
   )
 }
+
